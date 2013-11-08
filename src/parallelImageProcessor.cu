@@ -47,28 +47,28 @@ int main(int argc, char **argv) {
 
 	convolutionMask = new int[9];
 	convolutionMask[0] = 1;
-	convolutionMask[1] = 1;
+	convolutionMask[1] = 2;
 	convolutionMask[2] = 1;
-	convolutionMask[3] = 1;
-	convolutionMask[4] = 1;
-	convolutionMask[5] = 1;
-	convolutionMask[6] = 1;
-	convolutionMask[7] = 1;
-	convolutionMask[8] = 1;
+	convolutionMask[3] = 0;
+	convolutionMask[4] = 0;
+	convolutionMask[5] = 0;
+	convolutionMask[6] = -1;
+	convolutionMask[7] = -2;
+	convolutionMask[8] = -1;
 
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
-	imagen.convertToGrey();
-	greyMap = imagen.getBitMap();
-	//cudaConvertToGreyMap(map, greyMap, (f * c));
+	//imagen.convertToGrey();
+	//greyMap = imagen.getBitMap();
+	cudaConvertToGreyMap(map, greyMap, (f * c));
 
-	cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 9);
+	cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 1);
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err)<< endl;
 
 	for (int i = 0; i < f * c; i++) {
-			cout << convolutionMask[i] << endl;
+			cout << filterMap[i] << endl;
 		}
 	//
 

@@ -57,18 +57,19 @@ void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 	cudaFree(d_convertedMap);
 }
 
-__device__ int d_matrixOperator(int * d_greyMap, int * d_mask, int a, int b, int c, int d, int idx, int idy, int factor) {
+__device__ int d_matrixOperator(int *d_greyMap, int *d_mask, int a, int b,
+		int c, int d, int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
 	for (int i = a; i <= b; i++) {
 		for (int j = c; j <= d; j++) {
 			int x = idx + i - 1;
 			int y = idy + j - 1;
 			convertedPixel = convertedPixel
-					+ (d_greyMap[(x) + (x) * (y)] * d_mask[i + i * j]);
+					+ (d_greyMap[x + row * y] * d_mask[i + 3 * j]);
 		}
 	}
-	convertedPixel = convertedPixel / factor;
-	
+	convertedPixel = (int) convertedPixel / factor;
+
 	//normalizing
 	if (convertedPixel > 255) {
 		convertedPixel = 255;
@@ -80,7 +81,7 @@ __device__ int d_matrixOperator(int * d_greyMap, int * d_mask, int a, int b, int
 	return convertedPixel;
 }
 
-__global__ void d_processConvolution(int* d_greyMap, int *d_mask,
+__global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 		int *d_convertedMap, int factor, int row, int column) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int idy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -92,71 +93,80 @@ __global__ void d_processConvolution(int* d_greyMap, int *d_mask,
 
 	if (idx == 0) {
 		if (idy == 0) {
-			a=1;
-			b=2;
-			c=1;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 1;
+			b = 2;
+			c = 1;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else if (idy == (column - 1)) {
-			a=1;
-			b=2;
-			c=0;
-			d=1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 1;
+			b = 2;
+			c = 0;
+			d = 1;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else {
-			a=1;
-			b=2;
-			c=0;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 1;
+			b = 2;
+			c = 0;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		}
 	} else if (idx == (row - 1)) {
 		if (idy == 0) {
-			a=0;
-			b=1;
-			c=1;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 1;
+			c = 1;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else if (idy == (column - 1)) {
-			a=0;
-			b=1;
-			c=0;
-			d=1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 1;
+			c = 0;
+			d = 1;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else {
-			a=0;
-			b=1;
-			c=0;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 1;
+			c = 0;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		}
 	} else {
 		if (idy == 0) {
-			a=0;
-			b=2;
-			c=1;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 2;
+			c = 1;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else if (idy == (column - 1)) {
-			a=0;
-			b=2;
-			c=0;
-			d=1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 2;
+			c = 0;
+			d = 1;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		} else {
-			a=0;
-			b=2;
-			c=0;
-			d=2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c , d, idx, idy, factor);
+			a = 0;
+			b = 2;
+			c = 0;
+			d = 2;
+			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+					idx, idy, factor, row);
 		}
 	}
-	d_convertedMap[idx + idx * idy] = convertedPixel;
+	d_convertedMap[idx + idy * row] = convertedPixel;
 }
 
 //TODO complete cuda call
-void cudaConvolution(int* greyMap, int *convertedMap, int* mask,
-		int row, int column, int factor) {
+void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
+		int column, int factor) {
 	// La GPU trabaja sobre distinta RAM: reservamos memoria y copiamos allí los datos.
 	// El prefijo d_ nos ayuda a diferenciar los datos que están en el device (la GPU)
 	int* d_greyMap;
@@ -174,16 +184,14 @@ void cudaConvolution(int* greyMap, int *convertedMap, int* mask,
 	// el tercer argumento es la dirección en la que circulan los datos
 	cudaMemcpy(d_greyMap, greyMap, sizeof(int) * (row * column),
 			cudaMemcpyHostToDevice);
-	cudaMemcpy(d_mask, mask, sizeof(int) * 9,
-				cudaMemcpyHostToDevice);
+	cudaMemcpy(d_mask, mask, sizeof(int) * 9, cudaMemcpyHostToDevice);
 
 	// Esta llamada invoca al kernel, que se ejecuta en la GPU a la vez en múltiples
 	// tareas organizadas en bloques.
 	dim3 threadsPerBlock(256, 256);
- 	dim3 numBlocks(row / threadsPerBlock.x, column / threadsPerBlock.y);
-
+	dim3 numBlocks(row / threadsPerBlock.x, column / threadsPerBlock.y);
 	d_processConvolution<<<threadsPerBlock, numBlocks>>>(d_greyMap, d_mask,
-		d_convertedMap, factor, row, column);
+			d_convertedMap, factor, row, column);
 
 	// cudaMemcpy espera a que todos los kernels se hayan terminado de ejecutar
 	// y copia de vuelta los datos procesados. Ahora la dirección de los datos
@@ -192,7 +200,7 @@ void cudaConvolution(int* greyMap, int *convertedMap, int* mask,
 			cudaMemcpyDeviceToHost);
 
 	// Liberamos la memoria de la gráfica
-	cudaFree (d_greyMap);
+	cudaFree(d_greyMap);
 	cudaFree(d_mask);
 	cudaFree(d_convertedMap);
 }
