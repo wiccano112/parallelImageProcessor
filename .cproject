@@ -29,10 +29,13 @@
 								<option id="nvcc.compiler.option.level.1392927284" name="Generate host debug information (-g)" superClass="nvcc.compiler.option.level" value="true" valueType="boolean"/>
 								<option defaultValue="nvcc.compiler.optimization.level.none" id="nvcc.compiler.optimization.level.26069043" name="Optimization Level" superClass="nvcc.compiler.optimization.level" valueType="enumerated"/>
 								<option id="nvcc.compiler.pic.491364773" name="Position Independent Code (-fPIC)" superClass="nvcc.compiler.pic"/>
-								<option id="nvcc.compiler.include.paths.1631928396" superClass="nvcc.compiler.include.paths" valueType="includePath">
+								<option id="nvcc.compiler.include.paths.1631928396" name="Include paths (-I)" superClass="nvcc.compiler.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/parallelImageProcessor/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/parallelImageProcessor/src/lib}&quot;"/>
 								</option>
+								<option id="nvcc.compiler.keep.1736789739" name="Keep intermidiate files (-keep)" superClass="nvcc.compiler.keep" value="false" valueType="boolean"/>
+								<option id="nvcc.compiler.keepdir.1163743388" name="Intermidiate files location (-keep-dir)" superClass="nvcc.compiler.keepdir" value="" valueType="string"/>
+								<option id="nvcc.compiler.dontuseprofile.699780987" name="Do not use profile (-noprof)" superClass="nvcc.compiler.dontuseprofile" value="false" valueType="boolean"/>
 								<inputType id="nvcc.compiler.input.cu.1235089806" superClass="nvcc.compiler.input.cu"/>
 								<inputType id="nvcc.compiler.input.cpp.892930832" superClass="nvcc.compiler.input.cpp"/>
 								<inputType id="nvcc.compiler.input.c.1883049934" superClass="nvcc.compiler.input.c"/>
@@ -59,6 +62,7 @@
 					<sass major="3" minor="0"/>
 					<ptx major="3" minor="0"/>
 				</executable>
+				<editor-arch major="3" minor="0"/>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
@@ -132,5 +136,8 @@
 		<scannerConfigBuildInfo instanceId="com.nvidia.cuda.ide.configuration.debug.577317881;com.nvidia.cuda.ide.configuration.debug.577317881.;nvcc.compiler.base.1391121548;nvcc.compiler.input.c.1883049934">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.nvidia.cuda.ide.build.NVCCPerProjectProfile"/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/parallelImageProcessor"/>
 	</storageModule>
 </cproject>

@@ -10,62 +10,6 @@
 
 using namespace std;
 
-//static const int WORK_SIZE = 256;
-//
-///**
-// * This macro checks return value of the CUDA runtime call and exits
-// * the application if the call failed.
-// */
-//#define CUDA_CHECK_RETURN(value) {											\
-//	cudaError_t _m_cudaStat = value;										\
-//	if (_m_cudaStat != cudaSuccess) {										\
-//		fprintf(stderr, "Error %s at line %d in file %s\n",					\
-//				cudaGetErrorString(_m_cudaStat), __LINE__, __FILE__);		\
-//		exit(1);															\
-//	} }
-//
-//__device__ unsigned int bitreverse(unsigned int number) {
-//	number = ((0xf0f0f0f0 & number) >> 4) | ((0x0f0f0f0f & number) << 4);
-//	number = ((0xcccccccc & number) >> 2) | ((0x33333333 & number) << 2);
-//	number = ((0xaaaaaaaa & number) >> 1) | ((0x55555555 & number) << 1);
-//	return number;
-//}
-//
-///**
-// * CUDA kernel function that reverses the order of bits in each element of the array.
-// */
-//__global__ void bitreverse(void *data) {
-//	unsigned int *idata = (unsigned int*) data;
-//	idata[threadIdx.x] = bitreverse(idata[threadIdx.x]);
-//}
-//
-//void cudaTest() {
-//	void *d;
-//	int i;
-//	unsigned int idata[WORK_SIZE], odata[WORK_SIZE];
-//
-//	for (i = 0; i < WORK_SIZE; i++)
-//		idata[i] = (unsigned int) i;
-//
-//	CUDA_CHECK_RETURN(cudaMalloc((void**) &d, sizeof(int) * WORK_SIZE));
-//	CUDA_CHECK_RETURN(
-//			cudaMemcpy(d, idata, sizeof(int) * WORK_SIZE, cudaMemcpyHostToDevice));
-//
-//	bitreverse<<<1, WORK_SIZE, WORK_SIZE * sizeof(int)>>>(d);
-//
-//	CUDA_CHECK_RETURN(cudaThreadSynchronize());
-//	// Wait for the GPU launched work to complete
-//	CUDA_CHECK_RETURN(cudaGetLastError());
-//	CUDA_CHECK_RETURN(
-//			cudaMemcpy(odata, d, sizeof(int) * WORK_SIZE, cudaMemcpyDeviceToHost));
-//
-//	for (i = 0; i < WORK_SIZE; i++)
-//		printf("Input value: %u, device output: %u\n", idata[i], odata[i]);
-//
-//	CUDA_CHECK_RETURN(cudaFree((void*) d));
-//	CUDA_CHECK_RETURN(cudaDeviceReset());
-//}
-
 int filePreProcess(char * arg, char tamano[20], int &maximo) {
 
 	char cadena[300];
@@ -182,6 +126,40 @@ int getLengthFromString(char *t) {
 	else
 		return -1;
 
+}
+
+void horizontalEdgesMask(int *mask) {
+	mask[0] = 1;
+	mask[1] = 2;
+	mask[2] = 1;
+	mask[3] = 0;
+	mask[4] = 0;
+	mask[5] = 0;
+	mask[6] = -1;
+	mask[7] = -2;
+	mask[8] = -1;
+}
+
+void verticalEdgesMask(int * mask) {
+	mask[0] = 1;
+	mask[1] = 0;
+	mask[2] = -1;
+	mask[3] = 2;
+	mask[4] = 0;
+	mask[5] = -2;
+	mask[6] = 1;
+	mask[7] = 0;
+	mask[8] = -1;
+}
+
+void testSobel(int *a, int *b, int *c, int size) {
+
+	for (int i = 0; i < size; i++) {
+		c[i] = a[i] + b[i];
+		if (c[i] > 255) {
+			c[i] = 255;
+		}
+	}
 }
 
 #endif /* UTIL_CU_ */

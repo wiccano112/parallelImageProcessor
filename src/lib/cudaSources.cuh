@@ -9,16 +9,18 @@
 #define CUDASOURCES_CUH_
 
 __global__ void d_processGreyTransformation(int* d_originMap,
-		int* d_convertedMap) {
+		int* d_convertedMap, int sizeMap) {
 	// Cada tarea tiene un ID numérico basada en su posición en el bloque.
 
 	int convertedIdx = blockIdx.x * blockDim.x + threadIdx.x;
 	int originalIdx = convertedIdx * 3;
 
+	//if (convertedIdx < sizeMap) {
 	// Cada tarea trabaja sobre una porción de los datos
 	d_convertedMap[convertedIdx] = (int) (d_originMap[originalIdx]
 			+ d_originMap[originalIdx + 1] + d_originMap[originalIdx + 2]) / 3;
 	// Y no hay bucle! Hay una tarea por posición: cada tarea trabaja sólo sobre una posición!
+	//}
 }
 
 void cudaConvertToGreyMap(int* originMap, int* convertedMap,
@@ -41,10 +43,10 @@ void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 
 	// Esta llamada invoca al kernel, que se ejecuta en la GPU a la vez en múltiples
 	// tareas organizadas en bloques.
-	int blockSize = 256;
-	int numBlocks = convertedMapSize / blockSize;
+	int blockSize = (int) convertedMapSize / 900;
+	int numBlocks = (int) (convertedMapSize / blockSize) + 1;
 	d_processGreyTransformation<<<blockSize, numBlocks>>>(d_originMap,
-			d_convertedMap);
+			d_convertedMap, convertedMapSize);
 
 	// cudaMemcpy espera a que todos los kernels se hayan terminado de ejecutar
 	// y copia de vuelta los datos procesados. Ahora la dirección de los datos
@@ -90,7 +92,7 @@ __global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 	int b;
 	int c;
 	int d;
-
+	//if (idx < row && idy < column) {
 	if (idx == 0) {
 		if (idy == 0) {
 			a = 1;
@@ -162,6 +164,7 @@ __global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 		}
 	}
 	d_convertedMap[idx + idy * row] = convertedPixel;
+	//}
 }
 
 //TODO complete cuda call
@@ -189,7 +192,8 @@ void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
 	// Esta llamada invoca al kernel, que se ejecuta en la GPU a la vez en múltiples
 	// tareas organizadas en bloques.
 	dim3 threadsPerBlock(256, 256);
-	dim3 numBlocks(row / threadsPerBlock.x, column / threadsPerBlock.y);
+	dim3 numBlocks((row / threadsPerBlock.x) + 1,
+			(column / threadsPerBlock.y) + 1);
 	d_processConvolution<<<threadsPerBlock, numBlocks>>>(d_greyMap, d_mask,
 			d_convertedMap, factor, row, column);
 

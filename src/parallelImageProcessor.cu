@@ -26,7 +26,9 @@ int main(int argc, char **argv) {
 	int c = 0;
 	int *map;
 	int *greyMap;
+	int *greyMap2;
 	int *filterMap;
+	int *filterMap2;
 	int *convolutionMask;
 
 	//cudaTest();
@@ -39,37 +41,34 @@ int main(int argc, char **argv) {
 
 	posicion = filePreProcess(argv[1], tamano, maximo);
 	//cout << "RPM " << posicion << endl;
-	f = getLengthFromString(tamano);
-	c = getWidthFromString(tamano);
+	c = getLengthFromString(tamano);
+	f = getWidthFromString(tamano);
 	map = new int[f * c * 3];
 	greyMap = new int[f * c];
 	filterMap = new int[f * c];
+	greyMap2 = new int[f * c];
+	filterMap2 = new int[f * c];
 
 	convolutionMask = new int[9];
-	convolutionMask[0] = 1;
-	convolutionMask[1] = 2;
-	convolutionMask[2] = 1;
-	convolutionMask[3] = 0;
-	convolutionMask[4] = 0;
-	convolutionMask[5] = 0;
-	convolutionMask[6] = -1;
-	convolutionMask[7] = -2;
-	convolutionMask[8] = -1;
-
+	horizontalEdgesMask(convolutionMask);
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
 	//imagen.convertToGrey();
 	//greyMap = imagen.getBitMap();
 	cudaConvertToGreyMap(map, greyMap, (f * c));
-
+	verticalEdgesMask(convolutionMask);
 	cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 1);
+	horizontalEdgesMask(convolutionMask);
+	cudaConvolution(greyMap, greyMap2, convolutionMask, f, c, 1);
+
+	testSobel(filterMap, greyMap2, filterMap2, (f*c));
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
-	cout << cudaGetErrorString(err)<< endl;
+	cout << cudaGetErrorString(err) << endl;
 
 	for (int i = 0; i < f * c; i++) {
-			cout << filterMap[i] << endl;
-		}
+		cout << filterMap2[i] << endl;
+	}
 	//
 
 	//imagen.printImagetoConsole();
