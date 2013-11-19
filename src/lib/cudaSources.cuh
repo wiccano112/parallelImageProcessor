@@ -15,12 +15,10 @@ __global__ void d_processGreyTransformation(int* d_originMap,
 	int convertedIdx = blockIdx.x * blockDim.x + threadIdx.x;
 	int originalIdx = convertedIdx * 3;
 
-	//if (convertedIdx < sizeMap) {
 	// Cada tarea trabaja sobre una porción de los datos
 	d_convertedMap[convertedIdx] = (int) (d_originMap[originalIdx]
 			+ d_originMap[originalIdx + 1] + d_originMap[originalIdx + 2]) / 3;
 	// Y no hay bucle! Hay una tarea por posición: cada tarea trabaja sólo sobre una posición!
-	//}
 }
 
 void cudaConvertToGreyMap(int* originMap, int* convertedMap,
@@ -167,45 +165,87 @@ __global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 	//}
 }
 
-//TODO complete cuda call
 void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
 		int column, int factor) {
-	// La GPU trabaja sobre distinta RAM: reservamos memoria y copiamos allí los datos.
-	// El prefijo d_ nos ayuda a diferenciar los datos que están en el device (la GPU)
+
 	int* d_greyMap;
 	int* d_convertedMap;
 	int* d_mask;
 
-	// cudaMalloc reserva la memoria y asigna el puntero al valor correcto
 	cudaMalloc((void**) &d_greyMap, sizeof(int) * (row * column));
 	cudaMalloc((void**) &d_convertedMap, sizeof(int) * (row * column));
 	cudaMalloc((void**) &d_mask, sizeof(int) * 9);
 
-	// cudaMemcpy copia los datos desde la RAM normal a la de la GPU
-	// el primer argumento es la zona de memoria de destino
-	// el segundo argumento es la zona de memoria de origen
-	// el tercer argumento es la dirección en la que circulan los datos
 	cudaMemcpy(d_greyMap, greyMap, sizeof(int) * (row * column),
 			cudaMemcpyHostToDevice);
 	cudaMemcpy(d_mask, mask, sizeof(int) * 9, cudaMemcpyHostToDevice);
 
-	// Esta llamada invoca al kernel, que se ejecuta en la GPU a la vez en múltiples
-	// tareas organizadas en bloques.
 	dim3 threadsPerBlock(256, 256);
 	dim3 numBlocks((row / threadsPerBlock.x) + 1,
 			(column / threadsPerBlock.y) + 1);
 	d_processConvolution<<<threadsPerBlock, numBlocks>>>(d_greyMap, d_mask,
 			d_convertedMap, factor, row, column);
 
-	// cudaMemcpy espera a que todos los kernels se hayan terminado de ejecutar
-	// y copia de vuelta los datos procesados. Ahora la dirección de los datos
-	// ha cambiado.
+	cudaMemcpy(convertedMap, d_convertedMap, sizeof(int) * row * column,
+			cudaMemcpyDeviceToHost);
+
+	cudaFree(d_greyMap);
+	cudaFree(d_mask);
+	cudaFree(d_convertedMap);
+}
+
+__global__ void d_processSumArrays(int *d_arrayA, int *d_arrayB,
+		int *d_arrayC) {
+	int idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+	d_arrayC[idx] = d_arrayA[idx] + d_arrayB[idx];
+	if (d_arrayC[idx] > 255) {
+		d_arrayC[idx] = 255;
+	}
+}
+
+void cudaSobelFilter(int *greyMap, int *convertedMap, int row, int column,
+		int factor) {
+
+	int *d_horizontalGreyMap;
+	int *d_verticalGreyMap;
+	int *d_convertedMap;
+
+	int *horizontalEdgesMap;
+	int *verticalEdgesMap;
+	int *mask;
+	horizontalEdgesMap = new int[row * column];
+	verticalEdgesMap = new int[row * column];
+	mask = new int[9];
+
+	//deteccion de bordes horizontal
+	horizontalEdgesMask(mask);
+	cudaConvolution(greyMap, horizontalEdgesMap, mask, row, column, factor);
+
+	//deteccion de bordes vertical
+	verticalEdgesMask(mask);
+	cudaConvolution(greyMap, verticalEdgesMap, mask, row, column, factor);
+
+	cudaMalloc((void**) &d_horizontalGreyMap, sizeof(int) * (row * column));
+	cudaMalloc((void**) &d_verticalGreyMap, sizeof(int) * (row * column));
+	cudaMalloc((void**) &d_convertedMap, sizeof(int) * (row * column));
+
+	cudaMemcpy(d_horizontalGreyMap, horizontalEdgesMap,
+			sizeof(int) * (row * column), cudaMemcpyHostToDevice);
+	cudaMemcpy(d_verticalGreyMap, verticalEdgesMap,
+			sizeof(int) * (row * column), cudaMemcpyHostToDevice);
+
+	int blockSize = (int) row * column / 900;
+	int numBlocks = (int) (row * column / blockSize) + 1;
+	d_processSumArrays<<<blockSize, numBlocks>>>(d_horizontalGreyMap,
+			d_verticalGreyMap, d_convertedMap);
+
 	cudaMemcpy(convertedMap, d_convertedMap, sizeof(int) * row * column,
 			cudaMemcpyDeviceToHost);
 
 	// Liberamos la memoria de la gráfica
-	cudaFree(d_greyMap);
-	cudaFree(d_mask);
+	cudaFree(d_horizontalGreyMap);
+	cudaFree(d_verticalGreyMap);
 	cudaFree(d_convertedMap);
 }
 #endif /* CUDASOURCES_CUH_ */

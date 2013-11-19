@@ -152,7 +152,7 @@ void verticalEdgesMask(int * mask) {
 	mask[8] = -1;
 }
 
-void testSobel(int *a, int *b, int *c, int size) {
+void serialSobelFilter(int *a, int *b, int *c, int size) {
 
 	for (int i = 0; i < size; i++) {
 		c[i] = a[i] + b[i];

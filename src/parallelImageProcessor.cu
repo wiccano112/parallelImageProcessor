@@ -49,25 +49,27 @@ int main(int argc, char **argv) {
 	greyMap2 = new int[f * c];
 	filterMap2 = new int[f * c];
 
-	convolutionMask = new int[9];
-	horizontalEdgesMask(convolutionMask);
+	//convolutionMask = new int[9];
+	//horizontalEdgesMask(convolutionMask);
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
 	//imagen.convertToGrey();
 	//greyMap = imagen.getBitMap();
 	cudaConvertToGreyMap(map, greyMap, (f * c));
-	verticalEdgesMask(convolutionMask);
-	cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 1);
-	horizontalEdgesMask(convolutionMask);
-	cudaConvolution(greyMap, greyMap2, convolutionMask, f, c, 1);
+	//verticalEdgesMask(convolutionMask);
+	//cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 1);
+	//horizontalEdgesMask(convolutionMask);
+	//cudaConvolution(greyMap, greyMap2, convolutionMask, f, c, 1);
 
-	testSobel(filterMap, greyMap2, filterMap2, (f*c));
+	//serialSobelFilter(filterMap, greyMap2, filterMap2, (f*c));
+	cudaSobelFilter(greyMap, filterMap, f, c, 1);
+
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
 
 	for (int i = 0; i < f * c; i++) {
-		cout << filterMap2[i] << endl;
+		cout << filterMap[i] << endl;
 	}
 	//
 
