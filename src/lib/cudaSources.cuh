@@ -14,10 +14,12 @@ __global__ void d_processGreyTransformation(int* d_originMap,
 
 	int convertedIdx = blockIdx.x * blockDim.x + threadIdx.x;
 	int originalIdx = convertedIdx * 3;
-
-	// Cada tarea trabaja sobre una porción de los datos
-	d_convertedMap[convertedIdx] = (int) (d_originMap[originalIdx]
-			+ d_originMap[originalIdx + 1] + d_originMap[originalIdx + 2]) / 3;
+	if (convertedIdx < sizeMap) {
+		// Cada tarea trabaja sobre una porción de los datos
+		d_convertedMap[convertedIdx] = (int) (d_originMap[originalIdx]
+				+ d_originMap[originalIdx + 1] + d_originMap[originalIdx + 2])
+				/ 3;
+	}
 	// Y no hay bucle! Hay una tarea por posición: cada tarea trabaja sólo sobre una posición!
 }
 
@@ -60,6 +62,7 @@ void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 __device__ int d_matrixOperator(int *d_greyMap, int *d_mask, int a, int b,
 		int c, int d, int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
+
 	for (int i = a; i <= b; i++) {
 		for (int j = c; j <= d; j++) {
 			int x = idx + i - 1;
@@ -90,79 +93,79 @@ __global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 	int b;
 	int c;
 	int d;
-	//if (idx < row && idy < column) {
-	if (idx == 0) {
-		if (idy == 0) {
-			a = 1;
-			b = 2;
-			c = 1;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		} else if (idy == (column - 1)) {
-			a = 1;
-			b = 2;
-			c = 0;
-			d = 1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
+	if (idx < row && idy < column) {
+		if (idx == 0) {
+			if (idy == 0) {
+				a = 1;
+				b = 2;
+				c = 1;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else if (idy == (column - 1)) {
+				a = 1;
+				b = 2;
+				c = 0;
+				d = 1;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else {
+				a = 1;
+				b = 2;
+				c = 0;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			}
+		} else if (idx == (row - 1)) {
+			if (idy == 0) {
+				a = 0;
+				b = 1;
+				c = 1;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else if (idy == (column - 1)) {
+				a = 0;
+				b = 1;
+				c = 0;
+				d = 1;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else {
+				a = 0;
+				b = 1;
+				c = 0;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			}
 		} else {
-			a = 1;
-			b = 2;
-			c = 0;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
+			if (idy == 0) {
+				a = 0;
+				b = 2;
+				c = 1;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else if (idy == (column - 1)) {
+				a = 0;
+				b = 2;
+				c = 0;
+				d = 1;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			} else {
+				a = 0;
+				b = 2;
+				c = 0;
+				d = 2;
+				convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
+						idx, idy, factor, row);
+			}
 		}
-	} else if (idx == (row - 1)) {
-		if (idy == 0) {
-			a = 0;
-			b = 1;
-			c = 1;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		} else if (idy == (column - 1)) {
-			a = 0;
-			b = 1;
-			c = 0;
-			d = 1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		} else {
-			a = 0;
-			b = 1;
-			c = 0;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		}
-	} else {
-		if (idy == 0) {
-			a = 0;
-			b = 2;
-			c = 1;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		} else if (idy == (column - 1)) {
-			a = 0;
-			b = 2;
-			c = 0;
-			d = 1;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		} else {
-			a = 0;
-			b = 2;
-			c = 0;
-			d = 2;
-			convertedPixel = d_matrixOperator(d_greyMap, d_mask, a, b, c, d,
-					idx, idy, factor, row);
-		}
+		d_convertedMap[idx + idy * row] = convertedPixel;
 	}
-	d_convertedMap[idx + idy * row] = convertedPixel;
-	//}
 }
 
 void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
@@ -194,13 +197,14 @@ void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
 	cudaFree(d_convertedMap);
 }
 
-__global__ void d_processSumArrays(int *d_arrayA, int *d_arrayB,
-		int *d_arrayC) {
+__global__ void d_processSumArrays(int *d_arrayA, int *d_arrayB, int *d_arrayC,
+		int mapSize) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
-
-	d_arrayC[idx] = d_arrayA[idx] + d_arrayB[idx];
-	if (d_arrayC[idx] > 255) {
-		d_arrayC[idx] = 255;
+	if (idx < mapSize) {
+		d_arrayC[idx] = d_arrayA[idx] + d_arrayB[idx];
+		if (d_arrayC[idx] > 255) {
+			d_arrayC[idx] = 255;
+		}
 	}
 }
 
@@ -238,7 +242,7 @@ void cudaSobelFilter(int *greyMap, int *convertedMap, int row, int column,
 	int blockSize = (int) row * column / 900;
 	int numBlocks = (int) (row * column / blockSize) + 1;
 	d_processSumArrays<<<blockSize, numBlocks>>>(d_horizontalGreyMap,
-			d_verticalGreyMap, d_convertedMap);
+			d_verticalGreyMap, d_convertedMap, row * column);
 
 	cudaMemcpy(convertedMap, d_convertedMap, sizeof(int) * row * column,
 			cudaMemcpyDeviceToHost);

@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
 
-	for (int i = 0; i < f * c; i++) {
+	for (int i = 0; i < (f * c); i++) {
 		cout << filterMap[i] << endl;
 	}
 	//
