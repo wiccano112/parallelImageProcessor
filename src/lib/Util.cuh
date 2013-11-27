@@ -162,4 +162,19 @@ void serialSobelFilter(int *a, int *b, int *c, int size) {
 	}
 }
 
+void writeGpmImage(int *image, int row, int column, int max) {
+
+	ofstream outputFile;
+	outputFile.open("test.pgm", outputFile.out);
+	outputFile << "P2" << endl;
+	outputFile << "#RPM TT dev" << endl;
+	outputFile << row << " " << column << endl;
+	outputFile << max << endl;
+	for (int i = 0; i < row * column; i++) {
+		outputFile << image[i] << endl;
+	}
+
+	outputFile.close();
+
+}
 #endif /* UTIL_CU_ */

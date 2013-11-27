@@ -56,21 +56,23 @@ int main(int argc, char **argv) {
 	//imagen.convertToGrey();
 	//greyMap = imagen.getBitMap();
 	cudaConvertToGreyMap(map, greyMap, (f * c));
-	//verticalEdgesMask(convolutionMask);
-	//cudaConvolution(greyMap, filterMap, convolutionMask, f, c, 1);
-	//horizontalEdgesMask(convolutionMask);
-	//cudaConvolution(greyMap, greyMap2, convolutionMask, f, c, 1);
+	int opcion = 1;
+	int convolucionNumber = 1;
+	while (opcion) {
+		cudaSobelFilter(greyMap, filterMap, f, c, convolucionNumber);
+		writeGpmImage(filterMap, f, c, maximo);
+		cout << "repetimos?:(0 | 1) ";
+		cin >> opcion;
+		if(!opcion){
+			break;
+		}
+		cout << "ingresar nuevo valor de convolucion: ";
+		cin >> convolucionNumber;
 
-	//serialSobelFilter(filterMap, greyMap2, filterMap2, (f*c));
-	cudaSobelFilter(greyMap, filterMap, f, c, 1);
-
+	}
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
-
-	for (int i = 0; i < (f * c); i++) {
-		cout << filterMap[i] << endl;
-	}
 	//
 
 	//imagen.printImagetoConsole();
