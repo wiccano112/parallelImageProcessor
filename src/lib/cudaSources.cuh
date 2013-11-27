@@ -20,41 +20,27 @@ __global__ void d_processGreyTransformation(int* d_originMap,
 				+ d_originMap[originalIdx + 1] + d_originMap[originalIdx + 2])
 				/ 3;
 	}
-	// Y no hay bucle! Hay una tarea por posición: cada tarea trabaja sólo sobre una posición!
 }
 
 void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 		int convertedMapSize) {
-	// La GPU trabaja sobre distinta RAM: reservamos memoria y copiamos allí los datos.
-	// El prefijo d_ nos ayuda a diferenciar los datos que están en el device (la GPU)
 	int *d_originMap;
 	int *d_convertedMap;
 
-	// cudaMalloc reserva la memoria y asigna el puntero al valor correcto
 	cudaMalloc((void**) &d_originMap, sizeof(int) * convertedMapSize * 3);
 	cudaMalloc((void**) &d_convertedMap, sizeof(int) * convertedMapSize);
 
-	// cudaMemcpy copia los datos desde la RAM normal a la de la GPU
-	// el primer argumento es la zona de memoria de destino
-	// el segundo argumento es la zona de memoria de origen
-	// el tercer argumento es la dirección en la que circulan los datos
 	cudaMemcpy(d_originMap, originMap, sizeof(int) * convertedMapSize * 3,
 			cudaMemcpyHostToDevice);
 
-	// Esta llamada invoca al kernel, que se ejecuta en la GPU a la vez en múltiples
-	// tareas organizadas en bloques.
 	int blockSize = (int) convertedMapSize / 900;
 	int numBlocks = (int) (convertedMapSize / blockSize) + 1;
 	d_processGreyTransformation<<<blockSize, numBlocks>>>(d_originMap,
 			d_convertedMap, convertedMapSize);
 
-	// cudaMemcpy espera a que todos los kernels se hayan terminado de ejecutar
-	// y copia de vuelta los datos procesados. Ahora la dirección de los datos
-	// ha cambiado.
 	cudaMemcpy(convertedMap, d_convertedMap, sizeof(int) * convertedMapSize,
 			cudaMemcpyDeviceToHost);
 
-	// Liberamos la memoria de la gráfica
 	cudaFree(d_originMap);
 	cudaFree(d_convertedMap);
 }
@@ -247,7 +233,6 @@ void cudaSobelFilter(int *greyMap, int *convertedMap, int row, int column,
 	cudaMemcpy(convertedMap, d_convertedMap, sizeof(int) * row * column,
 			cudaMemcpyDeviceToHost);
 
-	// Liberamos la memoria de la gráfica
 	cudaFree(d_horizontalGreyMap);
 	cudaFree(d_verticalGreyMap);
 	cudaFree(d_convertedMap);

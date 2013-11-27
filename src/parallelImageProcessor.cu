@@ -31,16 +31,12 @@ int main(int argc, char **argv) {
 	int *filterMap2;
 	int *convolutionMask;
 
-	//cudaTest();
-	cout << "Hola Mundo" << endl;
-
 	if (argc <= 1) {
 		cout << "no ingresaste archivos por linea de comandos" << endl;
 		return 0;
 	}
 
 	posicion = filePreProcess(argv[1], tamano, maximo);
-	//cout << "RPM " << posicion << endl;
 	c = getLengthFromString(tamano);
 	f = getWidthFromString(tamano);
 	map = new int[f * c * 3];
@@ -49,12 +45,8 @@ int main(int argc, char **argv) {
 	greyMap2 = new int[f * c];
 	filterMap2 = new int[f * c];
 
-	//convolutionMask = new int[9];
-	//horizontalEdgesMask(convolutionMask);
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
-	//imagen.convertToGrey();
-	//greyMap = imagen.getBitMap();
 	cudaConvertToGreyMap(map, greyMap, (f * c));
 	int opcion = 1;
 	int convolucionNumber = 1;
@@ -73,11 +65,6 @@ int main(int argc, char **argv) {
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
-	//
-
-	//imagen.printImagetoConsole();
-
-	//cout << "RPM alto" << f << " ancho " << c << endl;
 
 	return 0;
 }
