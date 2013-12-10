@@ -16,7 +16,17 @@
 #include <Image.h>
 #include <cuda.h>
 #include <cudaSources.cuh>
+#include <vector>
+
 using namespace std;
+
+
+//void testCode(Image in, Image out) {
+//	vector<Node> nodeVector;
+//	Node firstNode;
+//	ProcessNode internalNode;
+//	Node LastNode;
+//}
 
 int main(int argc, char **argv) {
 	char tamano[20];
