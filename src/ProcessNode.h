@@ -9,15 +9,18 @@
 #define PROCESSNODE_H_
 
 #include "Node.h"
+#include "Image.h"
+#include "ImageFilter.h"
 
 class ProcessNode : public Node {
 
 private:
 	Image outputImage;
+	ImageFilter filter;
 
 public:
 	ProcessNode();
-	ProcessNode(ProcessNode const&);
+//	ProcessNode(ProcessNode const &);
 	ProcessNode(Image in, Image out);
 	virtual ~ProcessNode();
 

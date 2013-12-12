@@ -8,6 +8,8 @@
 #ifndef NODE_H_
 #define NODE_H_
 
+#include <Image.h>
+
 class Node {
 
 protected:
@@ -16,7 +18,7 @@ protected:
 
 public:
 	Node();
-	Node(Node const &);
+	//Node(Node const&);
 	Node(Image i);
 	virtual ~Node();
 

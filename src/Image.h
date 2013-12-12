@@ -18,7 +18,7 @@ private:
 	int * bitMap;
 public:
 	Image();
-	Image(Image const &);
+	//Image(Image const &);
 	Image(char * head, int maxColor, int imageLength, int imageWidth,
 			int * map);
 	virtual ~Image();

@@ -6,10 +6,11 @@
  */
 
 #include "Node.h"
+#include "Image.h"
 
 Node::Node() {
-	inputImage = 0;
 }
+
 
 Node::Node(Image i) {
 	inputImage = i;
@@ -25,8 +26,4 @@ Image Node::getInputImage() {
 
 void Node::setInputImage(Image i) {
 	inputImage = i;
-}
-
-void Node::eraseInputImage() {
-	inputImage = 0;
 }

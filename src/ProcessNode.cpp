@@ -6,10 +6,10 @@
  */
 
 #include "ProcessNode.h"
+#include "Image.h"
 
 ProcessNode::ProcessNode() {
-	outputImage = 0;
-	inputImage = 0;
+	// TODO Auto-generated destructor stub
 }
 
 ProcessNode::ProcessNode(Image in, Image out) {
@@ -29,6 +29,3 @@ void ProcessNode::setOutputImage(Image i) {
 	outputImage = i;
 }
 
-void ProcessNode::eraseOutputImage() {
-	outputImage = 0;
-}
