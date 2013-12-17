@@ -8,25 +8,25 @@
 #ifndef PROCESSNODE_H_
 #define PROCESSNODE_H_
 
-#include "Node.h"
 #include "Image.h"
-#include "ImageFilter.h"
 
-class ProcessNode : public Node {
+class ProcessNode {
 
 private:
 	Image outputImage;
-	ImageFilter filter;
+	Image inputImage;
+	int filter;
 
 public:
 	ProcessNode();
-//	ProcessNode(ProcessNode const &);
 	ProcessNode(Image in, Image out);
 	virtual ~ProcessNode();
 
+	Image getInputImage();
 	Image getOutputImage();
 	void setOutputImage(Image i);
-	void eraseOutputImage();
+	void setInputImage(Image i);
+	void setfilter(int f);
 
 };
 

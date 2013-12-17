@@ -17,24 +17,10 @@
 #include <cuda.h>
 #include <cudaSources.cuh>
 #include <vector>
-#include <Node.h>
 #include <ProcessNode.h>
 
 using namespace std;
 
-
-void testCode(Image in, Image out) {
-	vector<Node> nodeVector;
-	Node firstNode;
-	ProcessNode internalNode;
-	Node lastNode;
-
-	firstNode.setInputImage(in);
-
-	nodeVector.push_back(firstNode);
-	nodeVector.push_back(internalNode);
-	nodeVector.push_back(lastNode);
-}
 
 int main(int argc, char **argv) {
 	char tamano[20];
@@ -84,6 +70,5 @@ int main(int argc, char **argv) {
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
 
-//	testCode(imagen, imagen);
 	return 0;
 }

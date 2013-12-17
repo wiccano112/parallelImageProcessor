@@ -21,11 +21,20 @@ ProcessNode::~ProcessNode() {
 	// TODO Auto-generated destructor stub
 }
 
+Image ProcessNode::getInputImage() {
+	return inputImage;
+}
+
 Image ProcessNode::getOutputImage() {
 	return outputImage;
+}
+
+void ProcessNode::setInputImage(Image i) {
+	inputImage = i;
 }
 
 void ProcessNode::setOutputImage(Image i) {
 	outputImage = i;
 }
+
 
