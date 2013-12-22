@@ -39,7 +39,6 @@ Image::Image(char * head, int maxColor, int imageLength, int imageWidth,
 }
 
 Image::~Image() {
-	// TODO Auto-generated destructor stub
 }
 
 void Image::convertToGrey() {

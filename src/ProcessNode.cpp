@@ -9,7 +9,6 @@
 #include "Image.h"
 
 ProcessNode::ProcessNode() {
-	// TODO Auto-generated destructor stub
 }
 
 ProcessNode::ProcessNode(Image in, Image out) {
@@ -18,7 +17,6 @@ ProcessNode::ProcessNode(Image in, Image out) {
 }
 
 ProcessNode::~ProcessNode() {
-	// TODO Auto-generated destructor stub
 }
 
 Image ProcessNode::getInputImage() {
@@ -37,4 +35,7 @@ void ProcessNode::setOutputImage(Image i) {
 	outputImage = i;
 }
 
+void ProcessNode::setFilter(int i) {
+	filter = i;
+}
 

@@ -5,9 +5,14 @@
  *      Author: perro
  */
 
-#ifndef UTIL_CUH_
-#define UTIL_CUH_
+#ifndef UTIL_H_
+#define UTIL_H_
 
+#define MIN_OPTION 1
+#define MAX_OPTION 5
+
+#include <ProcessNode.h>
+#include <vector>
 using namespace std;
 
 int filePreProcess(char * arg, char tamano[20], int &maximo) {
@@ -23,7 +28,7 @@ int filePreProcess(char * arg, char tamano[20], int &maximo) {
 	while (!entrada.eof()) {
 
 		entrada.getline(cadena, 300);
-		if (strcmp(cadena, "P3")) {
+		if (strcmp(cadena, "P3") == 0) {
 			leer = true;
 		}
 		if (leer) {
@@ -37,6 +42,9 @@ int filePreProcess(char * arg, char tamano[20], int &maximo) {
 				maximo = atoi(cadena);
 				break;
 			}
+		} else {
+			cout << "El formato de archivo es incorrecto" << endl;
+			break;
 		}
 	}
 	salida = entrada.tellg();
@@ -57,9 +65,7 @@ void bitMapBuilder(int pos, char * arg, int a, int b, int *m, int n) {
 
 	for (int i = 0; i < size; i++) {
 		entrada.getline(cadena, 300);
-		//TODO instanciar arreglo antes de recorrerlo plop
 		m[i] = atoi(cadena);
-		//cout<<"RPM "<<cadena <<" ";
 	}
 	entrada.close();
 }
@@ -177,4 +183,84 @@ void writeGpmImage(int *image, int row, int column, int max) {
 	outputFile.close();
 
 }
+
+void displayImagesFilter() {
+
+	string filters[100];
+	int filtersNumber = MAX_OPTION;
+
+	filters[0] = "1 convertir imagen a escala de grises";
+	filters[1] =
+			"2 deteccion de bordes horizontal con convolucion bidimensional";
+	filters[2] = "3 deteccion de bordes vertical con convolucion bidimensional";
+	filters[3] = "4 deteccion de bordes de sobel";
+	filters[4] = "5 convolucion bidimensional por defecto";
+
+	cout << "seleccionar de la siguiente lista los filtros: " << endl;
+	for (int i = 0; i < filtersNumber; i++) {
+		cout << "\t" << filters[i] << endl;
+	}
+	cout << endl << endl << "Opcion : ";
+}
+
+bool checkInputFilterOption(int a) {
+
+	if (a >= MIN_OPTION && a <= MAX_OPTION) {
+		return true;
+	}
+	return false;
+}
+
+void setImageFiltersToNodes(int filtersNumber, vector<ProcessNode> *node) {
+
+	int option = 0;
+	bool okProcess = true;
+
+	for (int i = 0; i < filtersNumber; i++) {
+		cout << "Para el filtro numero " << i + 1 << endl << endl;
+		displayImagesFilter();
+		cin >> option;
+		cout << endl;
+		if (!checkInputFilterOption(option)) {
+			okProcess = false;
+			break;
+		}
+		ProcessNode p;
+		p.setFilter(option);
+		node->push_back(p);
+	}
+
+	if (okProcess) {
+		cout << "ok";
+		//TODO ok things
+	} else {
+		cout << "nook";
+		//TODO error
+	}
+
+}
+
+bool checkOkNumbersOfNodes(int number) {
+	if (number > 0) {
+		return true;
+	}
+	return false;
+}
+
+
+bool initialSettings(vector<ProcessNode> *nodes) {
+	int nodesNumber = -1;
+
+	cout << "ingresar el numero de filtros a ejecutar ";
+	cin >> nodesNumber;
+	if (!checkOkNumbersOfNodes(nodesNumber)) {
+		cout << "Error al ingresar un numero incorrecto de nodos" << endl;
+		return false;
+	}
+
+	setImageFiltersToNodes(nodesNumber, nodes);
+
+	return true;
+}
+
 #endif /* UTIL_CU_ */

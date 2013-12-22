@@ -7,14 +7,10 @@
 
 #include "ImageFilter.h"
 
-ImageFilter::ImageFilter()
-{
-	// TODO Auto-generated constructor stub
+ImageFilter::ImageFilter() {
 
 }
 
-ImageFilter::~ImageFilter()
-{
-	// TODO Auto-generated destructor stub
+ImageFilter::~ImageFilter() {
 }
 

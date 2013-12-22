@@ -7,20 +7,37 @@
  * this software and related documentation outside the terms of the EULA
  * is strictly prohibited.
  */
+
+
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
-#include <Util.cuh>
+#include <Util.h>
 #include <Image.h>
 #include <cuda.h>
 #include <cudaSources.cuh>
-#include <vector>
-#include <ProcessNode.h>
+
+
 
 using namespace std;
 
+void testCode(vector <ProcessNode> *nodes, Image image) {
+	cout <<"hola";
+	ProcessNode initNode;
+	ProcessNode finalNode;
+
+	initNode.setInputImage(image);
+	nodes->push_back(initNode);
+	if (!initialSettings(nodes)) {
+		nodes->pop_back();
+		return;
+	}
+	nodes->push_back(finalNode);
+
+
+}
 
 int main(int argc, char **argv) {
 	char tamano[20];
@@ -34,6 +51,7 @@ int main(int argc, char **argv) {
 	int *filterMap;
 	int *filterMap2;
 	int *convolutionMask;
+	vector<ProcessNode> nodes;
 
 	if (argc <= 1) {
 		cout << "no ingresaste archivos por linea de comandos" << endl;
@@ -51,6 +69,11 @@ int main(int argc, char **argv) {
 
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
+
+	testCode(&nodes, imagen);
+	cout<<"cantidad de nodos "<<nodes.size();
+	return 0;
+
 	cudaConvertToGreyMap(map, greyMap, (f * c));
 	int opcion = 1;
 	int convolucionNumber = 1;
@@ -59,7 +82,7 @@ int main(int argc, char **argv) {
 		writeGpmImage(filterMap, f, c, maximo);
 		cout << "repetimos?:(0 | 1) ";
 		cin >> opcion;
-		if(!opcion){
+		if (!opcion) {
 			break;
 		}
 		cout << "ingresar nuevo valor de convolucion: ";

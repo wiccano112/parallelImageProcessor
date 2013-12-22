@@ -26,7 +26,7 @@ public:
 	Image getOutputImage();
 	void setOutputImage(Image i);
 	void setInputImage(Image i);
-	void setfilter(int f);
+	void setFilter(int f);
 
 };
 
