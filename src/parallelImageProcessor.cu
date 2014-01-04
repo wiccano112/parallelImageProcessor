@@ -23,25 +23,6 @@ using namespace std;
 
 void testCode(vector<ProcessNode> *nodes, Image image) {
 
-	//doing iterator for pipeline
-	int actual = 0;
-
-	for (int i = actual; i < nodes->size(); i++) {
-		//cout << "RPM numero de filtro " << nodes[0][i].getFilter() << endl;
-		if (i == 0) {
-			//initial node
-			nodes[0][i + 1].setInputImage(nodes[0][i].getInputImage());
-		} else if (i == nodes->size() - 1) {
-			//last node
-			nodes[0][i].setOutputImage(nodes[0][i].getInputImage());
-		} else {
-			//filter node
-			nodes[0][i].setOutputImage(
-					doFilter(nodes[0][i].getInputImage(),
-							nodes[0][i].getFilter()));
-			nodes[0][i + 1].setInputImage(nodes[0][i].getOutputImage());
-		}
-	}
 }
 
 int main(int argc, char **argv) {
@@ -51,11 +32,17 @@ int main(int argc, char **argv) {
 	int f = 0;
 	int c = 0;
 	int *map;
+	int factor = 1;
 	vector<ProcessNode> nodes;
 
 	if (argc <= 1) {
 		cout << "no ingresaste archivos por linea de comandos" << endl;
 		return 0;
+	}
+	if (argv[2]) {
+		factor = atoi(argv[2]);
+	} else {
+		cout << "sin factor " << endl << endl;
 	}
 
 	posicion = filePreProcess(argv[1], tamano, maximo);
@@ -68,7 +55,7 @@ int main(int argc, char **argv) {
 
 	if (setEmptyPipeline(&nodes, imagen)) {
 		cout << "cantidad de nodos " << nodes.size() << endl << endl;
-		pipelineIterator(&nodes, imagen);
+		pipelineIterator(&nodes, imagen, factor);
 		//TODO doing iterator for pipeline
 	} else {
 		cout << "todo mal" << endl;

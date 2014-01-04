@@ -20,7 +20,7 @@ using namespace std;
 // "4 deteccion de bordes de sobel";
 // "5 convolucion bidimensional por defecto";
 
-Image doFilter(Image image, int filterOption) {
+Image doFilter(Image image, int filterOption, int factor) {
 
 	switch (filterOption) {
 	case 1: {
@@ -41,7 +41,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 2: {
 		// "2 deteccion de bordes horizontal con convolucion bidimensional"
-		int factor = 1;
+		int cFactor = factor;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -54,7 +54,7 @@ Image doFilter(Image image, int filterOption) {
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					factor);
+					cFactor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -68,7 +68,7 @@ Image doFilter(Image image, int filterOption) {
 			horizontalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					factor);
+					cFactor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
@@ -76,7 +76,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 3: {
 		// "3 deteccion de bordes vertical con convolucion bidimensional";
-		int factor = 1;
+		int cFactor = factor;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -111,7 +111,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 4: {
 		// "4 deteccion de bordes de sobel";
-		int factor = 3;
+		int cFactor = factor;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -150,7 +150,7 @@ Image doFilter(Image image, int filterOption) {
 	return image;
 }
 
-void pipelineIterator(vector<ProcessNode> *nodes, Image image) {
+void pipelineIterator(vector<ProcessNode> *nodes, Image image, int factor) {
 	int actual = 0;
 
 	for (int i = actual; i < nodes->size(); i++) {
@@ -164,7 +164,7 @@ void pipelineIterator(vector<ProcessNode> *nodes, Image image) {
 			//filter node
 			nodes[0][i].setOutputImage(
 					doFilter(nodes[0][i].getInputImage(),
-							nodes[0][i].getFilter()));
+							nodes[0][i].getFilter(), factor));
 			nodes[0][i + 1].setInputImage(nodes[0][i].getOutputImage());
 		}
 	}
