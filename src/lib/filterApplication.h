@@ -41,6 +41,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 2: {
 		// "2 deteccion de bordes horizontal con convolucion bidimensional"
+		int factor = 1;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -53,7 +54,7 @@ Image doFilter(Image image, int filterOption) {
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					1);
+					factor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -67,7 +68,7 @@ Image doFilter(Image image, int filterOption) {
 			horizontalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					1);
+					factor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
@@ -75,6 +76,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 3: {
 		// "3 deteccion de bordes vertical con convolucion bidimensional";
+		int factor = 1;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -87,7 +89,7 @@ Image doFilter(Image image, int filterOption) {
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					1);
+					factor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -101,7 +103,7 @@ Image doFilter(Image image, int filterOption) {
 			verticalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					1);
+					factor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
@@ -109,6 +111,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 4: {
 		// "4 deteccion de bordes de sobel";
+		int factor = 1;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
@@ -120,7 +123,7 @@ Image doFilter(Image image, int filterOption) {
 			verticalEdgesMask(mask);
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, 1);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, factor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -133,7 +136,7 @@ Image doFilter(Image image, int filterOption) {
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, 1);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, factor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
