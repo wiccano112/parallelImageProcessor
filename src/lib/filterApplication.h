@@ -111,7 +111,7 @@ Image doFilter(Image image, int filterOption) {
 	}
 	case 4: {
 		// "4 deteccion de bordes de sobel";
-		int factor = 1;
+		int factor = 3;
 		if (strcmp(image.getHeader(), "P3") == 0) {
 			int bitMapLenght = image.getBipMapLength();
 			int *bitMap = new int[bitMapLenght];
