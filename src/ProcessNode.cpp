@@ -9,6 +9,7 @@
 #include "Image.h"
 
 ProcessNode::ProcessNode() {
+	filter = -9;
 }
 
 ProcessNode::ProcessNode(Image in, Image out) {
@@ -37,5 +38,9 @@ void ProcessNode::setOutputImage(Image i) {
 
 void ProcessNode::setFilter(int i) {
 	filter = i;
+}
+
+int ProcessNode::getFilter() {
+	return filter;
 }
 

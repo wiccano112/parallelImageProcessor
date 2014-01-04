@@ -8,7 +8,6 @@
  * is strictly prohibited.
  */
 
-
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
@@ -18,25 +17,31 @@
 #include <Image.h>
 #include <cuda.h>
 #include <cudaSources.cuh>
-
-
+#include <filterApplication.h>
 
 using namespace std;
 
-void testCode(vector <ProcessNode> *nodes, Image image) {
-	cout <<"hola";
-	ProcessNode initNode;
-	ProcessNode finalNode;
+void testCode(vector<ProcessNode> *nodes, Image image) {
 
-	initNode.setInputImage(image);
-	nodes->push_back(initNode);
-	if (!initialSettings(nodes)) {
-		nodes->pop_back();
-		return;
+	//doing iterator for pipeline
+	int actual = 0;
+
+	for (int i = actual; i < nodes->size(); i++) {
+		//cout << "RPM numero de filtro " << nodes[0][i].getFilter() << endl;
+		if (i == 0) {
+			//initial node
+			nodes[0][i + 1].setInputImage(nodes[0][i].getInputImage());
+		} else if (i == nodes->size() - 1) {
+			//last node
+			nodes[0][i].setOutputImage(nodes[0][i].getInputImage());
+		} else {
+			//filter node
+			nodes[0][i].setOutputImage(
+					doFilter(nodes[0][i].getInputImage(),
+							nodes[0][i].getFilter()));
+			nodes[0][i + 1].setInputImage(nodes[0][i].getOutputImage());
+		}
 	}
-	nodes->push_back(finalNode);
-
-
 }
 
 int main(int argc, char **argv) {
@@ -46,11 +51,6 @@ int main(int argc, char **argv) {
 	int f = 0;
 	int c = 0;
 	int *map;
-	int *greyMap;
-	int *greyMap2;
-	int *filterMap;
-	int *filterMap2;
-	int *convolutionMask;
 	vector<ProcessNode> nodes;
 
 	if (argc <= 1) {
@@ -62,36 +62,24 @@ int main(int argc, char **argv) {
 	c = getLengthFromString(tamano);
 	f = getWidthFromString(tamano);
 	map = new int[f * c * 3];
-	greyMap = new int[f * c];
-	filterMap = new int[f * c];
-	greyMap2 = new int[f * c];
-	filterMap2 = new int[f * c];
 
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
 
-	testCode(&nodes, imagen);
-	cout<<"cantidad de nodos "<<nodes.size();
-	return 0;
-
-	cudaConvertToGreyMap(map, greyMap, (f * c));
-	int opcion = 1;
-	int convolucionNumber = 1;
-	while (opcion) {
-		cudaSobelFilter(greyMap, filterMap, f, c, convolucionNumber);
-		writeGpmImage(filterMap, f, c, maximo);
-		cout << "repetimos?:(0 | 1) ";
-		cin >> opcion;
-		if (!opcion) {
-			break;
-		}
-		cout << "ingresar nuevo valor de convolucion: ";
-		cin >> convolucionNumber;
-
+	if (setEmptyPipeline(&nodes, imagen)) {
+		cout << "cantidad de nodos " << nodes.size() << endl;
+		pipelineIterator(&nodes, imagen);
+		//TODO doing iterator for pipeline
+	} else {
+		cout << "todo mal" << endl;
+		return 0;
 	}
+	int size = 0;
+	size = nodes.size() - 1;
+	writeGpmImage(nodes[size].getOutputImage().getBitMap(), f, c, maximo);
 	cudaError_t err;
 	err = cudaDeviceSynchronize();
 	cout << cudaGetErrorString(err) << endl;
-
 	return 0;
+
 }

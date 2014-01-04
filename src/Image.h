@@ -11,14 +11,14 @@
 class Image {
 
 private:
-	char * header;
+	char *header;
 	int maxColorBit;
 	int length;
 	int width;
 	int * bitMap;
+	int bitMapLength;
 public:
 	Image();
-	//Image(Image const &);
 	Image(char * head, int maxColor, int imageLength, int imageWidth,
 			int * map);
 	virtual ~Image();
@@ -26,5 +26,13 @@ public:
 	void convertToGrey();
 	void printImagetoConsole();
 	int * getBitMap();
+	int getBipMapLength();
+	char * getHeader();
+	void setHeader(char * c);
+	void setBitMap(int * i);
+	void setBitMapLength(int i);
+	int getLength();
+	int getWidth();
+	int getMaxColorBit();
 };
 #endif /* IMAGE_H_ */

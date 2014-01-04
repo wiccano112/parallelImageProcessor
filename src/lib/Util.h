@@ -13,6 +13,7 @@
 
 #include <ProcessNode.h>
 #include <vector>
+
 using namespace std;
 
 int filePreProcess(char * arg, char tamano[20], int &maximo) {
@@ -211,7 +212,7 @@ bool checkInputFilterOption(int a) {
 	return false;
 }
 
-void setImageFiltersToNodes(int filtersNumber, vector<ProcessNode> *node) {
+bool setImageFiltersToNodes(int filtersNumber, vector<ProcessNode> *node) {
 
 	int option = 0;
 	bool okProcess = true;
@@ -231,11 +232,11 @@ void setImageFiltersToNodes(int filtersNumber, vector<ProcessNode> *node) {
 	}
 
 	if (okProcess) {
-		cout << "ok";
-		//TODO ok things
+		cout << "node.size() " << node->size();
+		return true;
 	} else {
 		cout << "nook";
-		//TODO error
+		return false;
 	}
 
 }
@@ -247,7 +248,6 @@ bool checkOkNumbersOfNodes(int number) {
 	return false;
 }
 
-
 bool initialSettings(vector<ProcessNode> *nodes) {
 	int nodesNumber = -1;
 
@@ -258,8 +258,27 @@ bool initialSettings(vector<ProcessNode> *nodes) {
 		return false;
 	}
 
-	setImageFiltersToNodes(nodesNumber, nodes);
+	if (!setImageFiltersToNodes(nodesNumber, nodes)) {
+		cout << "Error al momento de seleccionar filtros, opcion no valida"
+				<< endl;
+		return false;
+	}
 
+	return true;
+}
+
+bool setEmptyPipeline(vector<ProcessNode> *nodes, Image image) {
+
+	ProcessNode initNode;
+	ProcessNode finalNode;
+
+	initNode.setInputImage(image);
+	nodes->push_back(initNode);
+	if (!initialSettings(nodes)) {
+		nodes->pop_back();
+		return false;
+	}
+	nodes->push_back(finalNode);
 	return true;
 }
 

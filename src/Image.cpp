@@ -27,6 +27,7 @@ Image::Image(char * head, int maxColor, int imageLength, int imageWidth,
 		width = imageWidth;
 		//bitMap = new int[imageLength * imageWidth * 3];
 		bitMap = map;
+		bitMapLength = length * width * 3;
 	}
 	if (strcmp(head, "P2")) {
 		header = head;
@@ -35,9 +36,13 @@ Image::Image(char * head, int maxColor, int imageLength, int imageWidth,
 		width = imageWidth;
 		//bitMap = new int[imageLength * imageWidth];
 		bitMap = map;
+		bitMapLength = length * width;
 	}
 }
 
+int Image::getBipMapLength() {
+	return bitMapLength;
+}
 Image::~Image() {
 }
 
@@ -80,4 +85,32 @@ void Image::printImagetoConsole() {
 
 int * Image::getBitMap() {
 	return bitMap;
+}
+
+char * Image::getHeader() {
+	return header;
+}
+
+void Image::setBitMap(int *i) {
+	bitMap = i;
+}
+
+void Image::setBitMapLength(int i){
+	bitMapLength = i;
+}
+
+void Image::setHeader(char *c) {
+	header = c;
+}
+
+int Image::getLength() {
+	return length;
+}
+
+int Image::getWidth() {
+	return width;
+}
+
+int Image::getMaxColorBit() {
+	return maxColorBit;
 }

@@ -20,10 +20,12 @@ private:
 public:
 	ProcessNode();
 	ProcessNode(Image in, Image out);
+	//ProcessNode(const ProcessNode &p);
 	virtual ~ProcessNode();
 
 	Image getInputImage();
 	Image getOutputImage();
+	int getFilter();
 	void setOutputImage(Image i);
 	void setInputImage(Image i);
 	void setFilter(int f);
