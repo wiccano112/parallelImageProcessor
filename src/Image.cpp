@@ -25,7 +25,6 @@ Image::Image(char * head, int maxColor, int imageLength, int imageWidth,
 		maxColorBit = maxColor;
 		length = imageLength;
 		width = imageWidth;
-		//bitMap = new int[imageLength * imageWidth * 3];
 		bitMap = map;
 		bitMapLength = length * width * 3;
 	}
@@ -34,7 +33,6 @@ Image::Image(char * head, int maxColor, int imageLength, int imageWidth,
 		maxColorBit = maxColor;
 		length = imageLength;
 		width = imageWidth;
-		//bitMap = new int[imageLength * imageWidth];
 		bitMap = map;
 		bitMapLength = length * width;
 	}
@@ -49,11 +47,8 @@ Image::~Image() {
 void Image::convertToGrey() {
 	int * auxBitMap;
 
-	cout << "RPM begin to grey convert header " << header << " "
-			<< strcmp(header, "P3") << endl;
-
 	if (!strcmp(header, "P2")) {
-		cout << "RPM its already a grey image" << endl;
+		cout << "Its already a grey image" << endl;
 	}
 
 	if (!strcmp(header, "P3")) {
@@ -67,7 +62,6 @@ void Image::convertToGrey() {
 					+ auxBitMap[i + 2]) / 3;
 		}
 		header = "P2";
-		cout << "RPM image its convert" << endl;
 	}
 }
 

@@ -191,8 +191,7 @@ void displayImagesFilter() {
 	int filtersNumber = MAX_OPTION;
 
 	filters[0] = "1 convertir imagen a escala de grises";
-	filters[1] =
-			"2 deteccion de bordes horizontal con convolucion bidimensional";
+	filters[1] = "2 deteccion de bordes horizontal con convolucion bidimensional";
 	filters[2] = "3 deteccion de bordes vertical con convolucion bidimensional";
 	filters[3] = "4 deteccion de bordes de sobel";
 	filters[4] = "5 convolucion bidimensional por defecto";
