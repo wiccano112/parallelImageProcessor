@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 	Image imagen("P3", 255, f, c, map);
 
 	if (setEmptyPipeline(&nodes, imagen)) {
-		cout << "cantidad de nodos " << nodes.size() << endl;
+		cout << "cantidad de nodos " << nodes.size() << endl << endl;
 		pipelineIterator(&nodes, imagen);
 		//TODO doing iterator for pipeline
 	} else {
