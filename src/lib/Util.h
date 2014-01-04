@@ -232,7 +232,6 @@ bool setImageFiltersToNodes(int filtersNumber, vector<ProcessNode> *node) {
 	}
 
 	if (okProcess) {
-		cout << "node.size() " << node->size();
 		return true;
 	} else {
 		cout << "nook";

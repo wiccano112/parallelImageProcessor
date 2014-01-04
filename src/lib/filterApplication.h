@@ -89,7 +89,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					factor);
+					cFactor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -103,7 +103,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			verticalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
 			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
-					factor);
+					cFactor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
@@ -123,7 +123,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			verticalEdgesMask(mask);
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, factor);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, cFactor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -136,7 +136,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, factor);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, cFactor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}
@@ -144,6 +144,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 	}
 	default: {
 		cout << "error extraño";
+		break;
 	}
 	}
 
