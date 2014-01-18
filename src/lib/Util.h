@@ -13,6 +13,8 @@
 
 #include <ProcessNode.h>
 #include <vector>
+#include <cstdio>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -191,7 +193,8 @@ void displayImagesFilter() {
 	int filtersNumber = MAX_OPTION;
 
 	filters[0] = "1 convertir imagen a escala de grises";
-	filters[1] = "2 deteccion de bordes horizontal con convolucion bidimensional";
+	filters[1] =
+			"2 deteccion de bordes horizontal con convolucion bidimensional";
 	filters[2] = "3 deteccion de bordes vertical con convolucion bidimensional";
 	filters[3] = "4 deteccion de bordes de sobel";
 	filters[4] = "5 convolucion bidimensional por defecto";
@@ -278,6 +281,174 @@ bool setEmptyPipeline(vector<ProcessNode> *nodes, Image image) {
 	}
 	nodes->push_back(finalNode);
 	return true;
+}
+
+int sMatrixOperator(int *d_greyMap, int *d_mask, int a, int b,
+		int c, int d, int idx, int idy, int factor, int row) {
+	int convertedPixel = 0;
+
+	for (int i = a; i <= b; i++) {
+		for (int j = c; j <= d; j++) {
+			int x = idx + i - 1;
+			int y = idy + j - 1;
+			convertedPixel = convertedPixel
+					+ (d_greyMap[x + row * y] * d_mask[i + 3 * j]);
+		}
+	}
+	convertedPixel = (int) convertedPixel / factor;
+
+	//normalizing
+	if (convertedPixel > 255) {
+		convertedPixel = 255;
+	}
+	if (convertedPixel < 0) {
+		convertedPixel = 0;
+	}
+
+	return convertedPixel;
+}
+
+void staticSobel(int *d_greyMap, int *d_mask, int *d_convertedMap, int factor,
+		int row, int column) {
+	int convertedPixel = 0;
+	int a;
+	int b;
+	int c;
+	int d;
+
+	for (int idx = 0; idx < row; idx++) {
+		for (int idy = 0; idy < column; idy++) {
+
+			if (idx < row && idy < column) {
+				if (idx == 0) {
+					if (idy == 0) {
+						a = 1;
+						b = 2;
+						c = 1;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else if (idy == (column - 1)) {
+						a = 1;
+						b = 2;
+						c = 0;
+						d = 1;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else {
+						a = 1;
+						b = 2;
+						c = 0;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					}
+				} else if (idx == (row - 1)) {
+					if (idy == 0) {
+						a = 0;
+						b = 1;
+						c = 1;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else if (idy == (column - 1)) {
+						a = 0;
+						b = 1;
+						c = 0;
+						d = 1;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else {
+						a = 0;
+						b = 1;
+						c = 0;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					}
+				} else {
+					if (idy == 0) {
+						a = 0;
+						b = 2;
+						c = 1;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else if (idy == (column - 1)) {
+						a = 0;
+						b = 2;
+						c = 0;
+						d = 1;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					} else {
+						a = 0;
+						b = 2;
+						c = 0;
+						d = 2;
+						convertedPixel = sMatrixOperator(d_greyMap, d_mask, a,
+								b, c, d, idx, idy, factor, row);
+					}
+				}
+				d_convertedMap[idx + idy * row] = convertedPixel;
+			}
+		}
+	}
+}
+
+void sumMatrix(int * a, int * b, int *c, int f, int co) {
+
+	for (int i = 0; i < f * co; i++) {
+		c[i] = a[i] + b[i];
+	}
+}
+
+void testCodeStaticSobel(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	//cout <<f<<" "<<c<<endl;
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	int * mask = new int[9];
+	int g = 0;
+	//while (g != 30) {
+		horizontalEdgesMask(mask);
+		cudaConvertToGreyMap(image.getBitMap(), grayMap,
+				image.getBipMapLength());
+		staticSobel(grayMap, mask, cGrayMap1, 1, f, c);
+		verticalEdgesMask(mask);
+		staticSobel(grayMap, mask, cGrayMap2, 1, f, c);
+		sumMatrix(cGrayMap1, cGrayMap2, conc, f, c);
+		g++;
+	//	}
+//	cout << "P2" << endl << "#do for test" << endl << f << " " << c << endl
+//			<< "255" << endl;
+//	for (int i = 0; i < f * c; i++) {
+//		cout << conc[i] << endl;
+//	}
+}
+
+void testCodeParalellSobel(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	//cout <<f<<" "<<c<<endl;
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	int * mask = new int[9];
+	int g = 0;
+	//while (g != 30) {
+		horizontalEdgesMask(mask);
+		cudaConvertToGreyMap(image.getBitMap(), grayMap,image.getBipMapLength());
+		cudaSobelFilter(grayMap,conc,f,c,1);
+		g++;
+	//}
+
 }
 
 #endif /* UTIL_CU_ */

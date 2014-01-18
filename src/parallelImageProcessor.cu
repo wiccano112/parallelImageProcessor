@@ -21,10 +21,6 @@
 
 using namespace std;
 
-void testCode(vector<ProcessNode> *nodes, Image image) {
-
-}
-
 int main(int argc, char **argv) {
 	char tamano[20];
 	int maximo = 0;
@@ -52,6 +48,16 @@ int main(int argc, char **argv) {
 
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
+
+	if (strcmp(argv[3], "debug") == 0 ) {
+		if(strcmp(argv[4], "s") == 0) {
+			testCodeStaticSobel(imagen);
+		}
+		else if(strcmp(argv[4], "p") == 0) {
+			testCodeParalellSobel(imagen);
+		}
+		return 0;
+	}
 
 	if (setEmptyPipeline(&nodes, imagen)) {
 		pipelineIterator(&nodes, imagen, factor);
