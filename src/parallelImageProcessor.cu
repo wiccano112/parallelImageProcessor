@@ -21,6 +21,55 @@
 
 using namespace std;
 
+void testCodeStaticSobel(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	//cout <<f<<" "<<c<<endl;
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	int * mask = new int[9];
+	int g = 0;
+	//while (g != 30) {
+		horizontalEdgesMask(mask);
+		cudaConvertToGreyMap(image.getBitMap(), grayMap,
+				image.getBipMapLength());
+		staticSobel(grayMap, mask, cGrayMap1, 1, f, c);
+		verticalEdgesMask(mask);
+		staticSobel(grayMap, mask, cGrayMap2, 1, f, c);
+		sumMatrix(cGrayMap1, cGrayMap2, conc, f, c);
+		g++;
+	//	}
+//	cout << "P2" << endl << "#do for test" << endl << f << " " << c << endl
+//			<< "255" << endl;
+//	for (int i = 0; i < f * c; i++) {
+//		cout << conc[i] << endl;
+//	}
+}
+
+
+void testCodeParalellSobel(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	//cout <<f<<" "<<c<<endl;
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	int * mask = new int[9];
+	int g = 0;
+	//while (g != 30) {
+		horizontalEdgesMask(mask);
+		cudaConvertToGreyMap(image.getBitMap(), grayMap,image.getBipMapLength());
+		cudaSobelFilter(grayMap,conc,f,c,1);
+		g++;
+	//}
+
+}
+
 int main(int argc, char **argv) {
 	char tamano[20];
 	int maximo = 0;
@@ -49,7 +98,7 @@ int main(int argc, char **argv) {
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	Image imagen("P3", 255, f, c, map);
 
-	if (strcmp(argv[3], "debug") == 0 ) {
+	if (argv[3] && strcmp(argv[3], "debug") == 0 ) {
 		if(strcmp(argv[4], "s") == 0) {
 			testCodeStaticSobel(imagen);
 		}

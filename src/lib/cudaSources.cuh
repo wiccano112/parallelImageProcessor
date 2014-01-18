@@ -45,8 +45,8 @@ void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 	cudaFree(d_convertedMap);
 }
 
-__device__ int matrixOperator(int *d_greyMap, int *d_mask, int a, int b,
-		int c, int d, int idx, int idy, int factor, int row) {
+__device__ int matrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c,
+		int d, int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
 
 	for (int i = a; i <= b; i++) {
@@ -169,7 +169,16 @@ void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
 			cudaMemcpyHostToDevice);
 	cudaMemcpy(d_mask, mask, sizeof(int) * 9, cudaMemcpyHostToDevice);
 
-	dim3 threadsPerBlock(256, 256);
+	int x = 256;
+	int y = 256;
+
+	if (row > 9000) {
+		x = 512;
+	}
+	if (column > 9000) {
+		y = 512;
+	}
+	dim3 threadsPerBlock(x, y);
 	dim3 numBlocks((row / threadsPerBlock.x) + 1,
 			(column / threadsPerBlock.y) + 1);
 	d_processConvolution<<<threadsPerBlock, numBlocks>>>(d_greyMap, d_mask,
