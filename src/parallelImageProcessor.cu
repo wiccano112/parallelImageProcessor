@@ -49,7 +49,6 @@ void testCodeStaticSobel(Image image) {
 //	}
 }
 
-
 void testCodeParalellSobel(Image image) {
 	int f = image.getLength();
 	int c = image.getWidth();

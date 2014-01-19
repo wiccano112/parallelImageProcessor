@@ -172,10 +172,10 @@ void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
 	int x = 256;
 	int y = 256;
 
-	if (row > 9000) {
+	if (row > 8000) {
 		x = 512;
 	}
-	if (column > 9000) {
+	if (column > 8000) {
 		y = 512;
 	}
 	dim3 threadsPerBlock(x, y);
