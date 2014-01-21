@@ -196,7 +196,9 @@ __global__ void d_processSumArrays(int *d_arrayA, int *d_arrayB, int *d_arrayC,
 		int mapSize) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	if (idx < mapSize) {
-		d_arrayC[idx] = d_arrayA[idx] + d_arrayB[idx];
+		d_arrayC[idx] = sqrt(
+				(float) d_arrayA[idx] * d_arrayA[idx]
+						+ (float) d_arrayB[idx] * d_arrayB[idx]);
 		if (d_arrayC[idx] > 255) {
 			d_arrayC[idx] = 255;
 		}
