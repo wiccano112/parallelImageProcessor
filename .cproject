@@ -92,6 +92,10 @@
 								<option id="nvcc.compiler.option.level.592131458" name="Generate host debug information (-g)" superClass="nvcc.compiler.option.level"/>
 								<option defaultValue="nvcc.compiler.optimization.level.most" id="nvcc.compiler.optimization.level.478536715" name="Optimization Level" superClass="nvcc.compiler.optimization.level" valueType="enumerated"/>
 								<option id="nvcc.compiler.pic.1612440870" name="Position Independent Code (-fPIC)" superClass="nvcc.compiler.pic"/>
+								<option id="nvcc.compiler.include.paths.1105487508" superClass="nvcc.compiler.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/lib}&quot;"/>
+								</option>
 								<inputType id="nvcc.compiler.input.cu.1820875202" superClass="nvcc.compiler.input.cu"/>
 								<inputType id="nvcc.compiler.input.cpp.1603345085" superClass="nvcc.compiler.input.cpp"/>
 								<inputType id="nvcc.compiler.input.c.1700777850" superClass="nvcc.compiler.input.c"/>
@@ -119,6 +123,7 @@
 					<sass major="3" minor="0"/>
 					<ptx major="3" minor="0"/>
 				</executable>
+				<editor-arch major="3" minor="0"/>
 			</storageModule>
 		</cconfiguration>
 	</storageModule>
