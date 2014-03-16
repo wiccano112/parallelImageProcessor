@@ -123,7 +123,8 @@ Image doFilter(Image image, int filterOption, int factor) {
 			verticalEdgesMask(mask);
 			bitMap = image.getBitMap();
 			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, cFactor);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column,
+					cFactor);
 			image.setHeader("P2");
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
@@ -136,7 +137,43 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
 			grayBitMap = image.getBitMap();
-			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column, cFactor);
+			cudaSobelFilter(grayBitMap, convolutionBitMap, row, column,
+					cFactor);
+			image.setBitMap(convolutionBitMap);
+			image.setBitMapLength(bitMapLenght);
+		}
+		break;
+	}
+	case 5: {
+		// "5 convolucion bidimensional desde archivo convolutionKernel"
+		int cFactor = factor;
+		if (strcmp(image.getHeader(), "P3") == 0) {
+			int bitMapLenght = image.getBipMapLength();
+			int *bitMap = new int[bitMapLenght];
+			int *grayBitMap = new int[bitMapLenght];
+			int *convolutionBitMap = new int[bitMapLenght];
+			int *mask = new int[9];
+			int row = image.getLength();
+			int column = image.getWidth();
+			readConvolutionKernel(mask);
+			bitMap = image.getBitMap();
+			cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
+			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+					cFactor);
+			image.setHeader("P2");
+			image.setBitMap(convolutionBitMap);
+			image.setBitMapLength(bitMapLenght);
+		} else if (strcmp(image.getHeader(), "P2") == 0) {
+			int bitMapLenght = image.getBipMapLength();
+			int *grayBitMap = new int[bitMapLenght];
+			int *convolutionBitMap = new int[bitMapLenght];
+			int *mask = new int[9];
+			int row = image.getLength();
+			int column = image.getWidth();
+			readConvolutionKernel(mask);
+			grayBitMap = image.getBitMap();
+			cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+					cFactor);
 			image.setBitMap(convolutionBitMap);
 			image.setBitMapLength(bitMapLenght);
 		}

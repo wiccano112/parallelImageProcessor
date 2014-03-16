@@ -15,6 +15,7 @@
 #include <vector>
 #include <cstdio>
 #include <sys/time.h>
+#include <iostream>
 
 using namespace std;
 
@@ -72,9 +73,27 @@ void bitMapBuilder(int pos, char * arg, int a, int b, int *m, int n) {
 	}
 	entrada.close();
 }
+void createConvolutionKernelArray(fstream & input, int * convolutionKernel) {
+
+	int current = 0;
+	int i = 0;
+	while (input >> current) {
+		convolutionKernel[i++] = current;
+	}
+}
+
+void readConvolutionKernel(int *convolutionKernel) {
+
+	char buff[300];
+	fstream entrada;
+	char * file =
+			"/home/perro/Dropbox/DEVenviroment/cuda project/parallelImageProcessor/Debug/convolutionKernel";
+	entrada.open(file, fstream::in);
+	createConvolutionKernelArray(entrada, convolutionKernel);
+}
 
 /**
- * @brief De un string alto espacio ancho, solo retorna el ancho en entero.
+ * @brief De un string "alto" espacio ancho, solo retorna el ancho en entero.
  * @param t String formato alto espacio ancho ej "500 500"
  * @return Retorna el ancho como integer
  ** */
@@ -197,7 +216,7 @@ void displayImagesFilter() {
 			"2 deteccion de bordes horizontal con convolucion bidimensional";
 	filters[2] = "3 deteccion de bordes vertical con convolucion bidimensional";
 	filters[3] = "4 deteccion de bordes de sobel";
-	filters[4] = "5 convolucion bidimensional por defecto";
+	filters[4] = "5 convolucion bidimensional desde archivo convolutionKernel";
 
 	cout << "seleccionar de la siguiente lista los filtros: " << endl;
 	for (int i = 0; i < filtersNumber; i++) {
@@ -283,8 +302,8 @@ bool setEmptyPipeline(vector<ProcessNode> *nodes, Image image) {
 	return true;
 }
 
-int sMatrixOperator(int *d_greyMap, int *d_mask, int a, int b,
-		int c, int d, int idx, int idy, int factor, int row) {
+int sMatrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c, int d,
+		int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
 
 	for (int i = a; i <= b; i++) {
@@ -399,7 +418,7 @@ void staticSobel(int *d_greyMap, int *d_mask, int *d_convertedMap, int factor,
 void sumMatrix(int * a, int * b, int *c, int f, int co) {
 
 	for (int i = 0; i < f * co; i++) {
-		c[i] = a[i] + b[i];
+		c[i] = sqrt((float) a[i] * a[i] + b[i] * b[i]);
 	}
 }
 
