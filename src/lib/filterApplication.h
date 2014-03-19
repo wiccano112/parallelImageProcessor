@@ -47,7 +47,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int *bitMap = new int[bitMapLenght];
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			horizontalEdgesMask(mask);
@@ -62,7 +62,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int bitMapLenght = image.getBipMapLength();
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			horizontalEdgesMask(mask);
@@ -82,7 +82,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int *bitMap = new int[bitMapLenght];
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
@@ -97,7 +97,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int bitMapLenght = image.getBipMapLength();
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
@@ -117,7 +117,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int *bitMap = new int[bitMapLenght];
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
@@ -132,7 +132,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int bitMapLenght = image.getBipMapLength();
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			verticalEdgesMask(mask);
@@ -152,7 +152,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int *bitMap = new int[bitMapLenght];
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			readConvolutionKernel(mask);
@@ -167,7 +167,7 @@ Image doFilter(Image image, int filterOption, int factor) {
 			int bitMapLenght = image.getBipMapLength();
 			int *grayBitMap = new int[bitMapLenght];
 			int *convolutionBitMap = new int[bitMapLenght];
-			int *mask = new int[9];
+			float *mask = new float[9];
 			int row = image.getLength();
 			int column = image.getWidth();
 			readConvolutionKernel(mask);
@@ -179,6 +179,79 @@ Image doFilter(Image image, int filterOption, int factor) {
 		}
 		break;
 	}
+	case 6: {
+			// "6 sharpen filter por convolucion bidimensional"
+			int cFactor = factor;
+			if (strcmp(image.getHeader(), "P3") == 0) {
+				int bitMapLenght = image.getBipMapLength();
+				int *bitMap = new int[bitMapLenght];
+				int *grayBitMap = new int[bitMapLenght];
+				int *convolutionBitMap = new int[bitMapLenght];
+				float *mask = new float[9];
+				int row = image.getLength();
+				int column = image.getWidth();
+				sharpenMask(mask);
+				bitMap = image.getBitMap();
+				cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
+				cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+						cFactor);
+				image.setHeader("P2");
+				image.setBitMap(convolutionBitMap);
+				image.setBitMapLength(bitMapLenght);
+			} else if (strcmp(image.getHeader(), "P2") == 0) {
+				int bitMapLenght = image.getBipMapLength();
+				int *grayBitMap = new int[bitMapLenght];
+				int *convolutionBitMap = new int[bitMapLenght];
+				float *mask = new float[9];
+				int row = image.getLength();
+				int column = image.getWidth();
+				sharpenMask(mask);
+				grayBitMap = image.getBitMap();
+				cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+						cFactor);
+				image.setBitMap(convolutionBitMap);
+				image.setBitMapLength(bitMapLenght);
+			}
+			break;
+		}
+	case 7: {
+			// "7 blur filter por convolucion bidimensional"
+			int cFactor = 6;
+			if (factor) {
+				cFactor = factor;
+			}
+			if (strcmp(image.getHeader(), "P3") == 0) {
+				int bitMapLenght = image.getBipMapLength();
+				int *bitMap = new int[bitMapLenght];
+				int *grayBitMap = new int[bitMapLenght];
+				int *convolutionBitMap = new int[bitMapLenght];
+				float *mask = new float[9];
+				int row = image.getLength();
+				int column = image.getWidth();
+				blurMask(mask);
+				bitMap = image.getBitMap();
+				cudaConvertToGreyMap(bitMap, grayBitMap, bitMapLenght);
+				cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+						cFactor);
+				image.setHeader("P2");
+				image.setBitMap(convolutionBitMap);
+				image.setBitMapLength(bitMapLenght);
+			} else if (strcmp(image.getHeader(), "P2") == 0) {
+				int bitMapLenght = image.getBipMapLength();
+				int *grayBitMap = new int[bitMapLenght];
+				int *convolutionBitMap = new int[bitMapLenght];
+				float *mask = new float[9];
+				int row = image.getLength();
+				int column = image.getWidth();
+				blurMask(mask);
+				grayBitMap = image.getBitMap();
+				cudaConvolution(grayBitMap, convolutionBitMap, mask, row, column,
+						cFactor);
+				image.setBitMap(convolutionBitMap);
+				image.setBitMapLength(bitMapLenght);
+			}
+			break;
+		}
 	default: {
 		cout << "error extraño";
 		break;

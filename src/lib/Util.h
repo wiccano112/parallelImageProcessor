@@ -9,7 +9,7 @@
 #define UTIL_H_
 
 #define MIN_OPTION 1
-#define MAX_OPTION 5
+#define MAX_OPTION 7
 
 #include <ProcessNode.h>
 #include <vector>
@@ -73,18 +73,17 @@ void bitMapBuilder(int pos, char * arg, int a, int b, int *m, int n) {
 	}
 	entrada.close();
 }
-void createConvolutionKernelArray(fstream & input, int * convolutionKernel) {
+void createConvolutionKernelArray(fstream & input, float * convolutionKernel) {
 
-	int current = 0;
+	float current = 0;
 	int i = 0;
 	while (input >> current) {
 		convolutionKernel[i++] = current;
 	}
 }
 
-void readConvolutionKernel(int *convolutionKernel) {
+void readConvolutionKernel(float *convolutionKernel) {
 
-	char buff[300];
 	fstream entrada;
 	char * file =
 			"/home/perro/Dropbox/DEVenviroment/cuda project/parallelImageProcessor/Debug/convolutionKernel";
@@ -156,7 +155,7 @@ int getLengthFromString(char *t) {
 
 }
 
-void horizontalEdgesMask(int *mask) {
+void horizontalEdgesMask(float *mask) {
 	mask[0] = 1;
 	mask[1] = 2;
 	mask[2] = 1;
@@ -168,7 +167,7 @@ void horizontalEdgesMask(int *mask) {
 	mask[8] = -1;
 }
 
-void verticalEdgesMask(int * mask) {
+void verticalEdgesMask(float * mask) {
 	mask[0] = 1;
 	mask[1] = 0;
 	mask[2] = -1;
@@ -178,6 +177,30 @@ void verticalEdgesMask(int * mask) {
 	mask[6] = 1;
 	mask[7] = 0;
 	mask[8] = -1;
+}
+
+void sharpenMask(float * mask) {
+	mask[0] = -1;
+	mask[1] = -1;
+	mask[2] = -1;
+	mask[3] = -1;
+	mask[4] = 9;
+	mask[5] = -1;
+	mask[6] = -1;
+	mask[7] = -1;
+	mask[8] = -1;
+}
+
+void blurMask(float * mask) {
+	mask[0] = 1;
+	mask[1] = 1;
+	mask[2] = 1;
+	mask[3] = 1;
+	mask[4] = 1;
+	mask[5] = 1;
+	mask[6] = 1;
+	mask[7] = 1;
+	mask[8] = 1;
 }
 
 void serialSobelFilter(int *a, int *b, int *c, int size) {
@@ -217,6 +240,8 @@ void displayImagesFilter() {
 	filters[2] = "3 deteccion de bordes vertical con convolucion bidimensional";
 	filters[3] = "4 deteccion de bordes de sobel";
 	filters[4] = "5 convolucion bidimensional desde archivo convolutionKernel";
+	filters[5] = "6 sharpen filter por convolucion bidimensional";
+	filters[6] = "7 blur filter por convolucion bidimensional";
 
 	cout << "seleccionar de la siguiente lista los filtros: " << endl;
 	for (int i = 0; i < filtersNumber; i++) {
@@ -302,7 +327,7 @@ bool setEmptyPipeline(vector<ProcessNode> *nodes, Image image) {
 	return true;
 }
 
-int sMatrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c, int d,
+int sMatrixOperator(int *d_greyMap, float *d_mask, int a, int b, int c, int d,
 		int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
 
@@ -327,7 +352,7 @@ int sMatrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c, int d,
 	return convertedPixel;
 }
 
-void staticSobel(int *d_greyMap, int *d_mask, int *d_convertedMap, int factor,
+void staticConvolution(int *d_greyMap, float *d_mask, int *d_convertedMap, int factor,
 		int row, int column) {
 	int convertedPixel = 0;
 	int a;

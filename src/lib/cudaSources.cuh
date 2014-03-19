@@ -45,7 +45,7 @@ void cudaConvertToGreyMap(int* originMap, int* convertedMap,
 	cudaFree(d_convertedMap);
 }
 
-__device__ int matrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c,
+__device__ int matrixOperator(int *d_greyMap, float *d_mask, int a, int b, int c,
 		int d, int idx, int idy, int factor, int row) {
 	int convertedPixel = 0;
 
@@ -70,7 +70,7 @@ __device__ int matrixOperator(int *d_greyMap, int *d_mask, int a, int b, int c,
 	return convertedPixel;
 }
 
-__global__ void d_processConvolution(int *d_greyMap, int *d_mask,
+__global__ void d_processConvolution(int *d_greyMap, float *d_mask,
 		int *d_convertedMap, int factor, int row, int column) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int idy = blockIdx.y * blockDim.y + threadIdx.y;
@@ -154,20 +154,20 @@ __global__ void d_processConvolution(int *d_greyMap, int *d_mask,
 	}
 }
 
-void cudaConvolution(int *greyMap, int *convertedMap, int* mask, int row,
+void cudaConvolution(int *greyMap, int *convertedMap, float* mask, int row,
 		int column, int factor) {
 
 	int* d_greyMap;
 	int* d_convertedMap;
-	int* d_mask;
+	float* d_mask;
 
 	cudaMalloc((void**) &d_greyMap, sizeof(int) * (row * column));
 	cudaMalloc((void**) &d_convertedMap, sizeof(int) * (row * column));
-	cudaMalloc((void**) &d_mask, sizeof(int) * 9);
+	cudaMalloc((void**) &d_mask, sizeof(float) * 9);
 
 	cudaMemcpy(d_greyMap, greyMap, sizeof(int) * (row * column),
 			cudaMemcpyHostToDevice);
-	cudaMemcpy(d_mask, mask, sizeof(int) * 9, cudaMemcpyHostToDevice);
+	cudaMemcpy(d_mask, mask, sizeof(float) * 9, cudaMemcpyHostToDevice);
 
 	int x = 256;
 	int y = 256;
@@ -214,10 +214,10 @@ void cudaSobelFilter(int *greyMap, int *convertedMap, int row, int column,
 
 	int *horizontalEdgesMap;
 	int *verticalEdgesMap;
-	int *mask;
+	float *mask;
 	horizontalEdgesMap = new int[row * column];
 	verticalEdgesMap = new int[row * column];
-	mask = new int[9];
+	mask = new float[9];
 
 	//deteccion de bordes horizontal
 	horizontalEdgesMask(mask);

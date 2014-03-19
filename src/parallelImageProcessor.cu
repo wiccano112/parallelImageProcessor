@@ -21,11 +21,12 @@
 
 using namespace std;
 
-void testCode(int * v) {
+void testCode(float * v) {
 	for(int i=0;i<9;i++){
 		cout<<v[i]<< " ";
 	}
 }
+
 void testCodeStaticSobel(Image image) {
 	int f = image.getLength();
 	int c = image.getWidth();
@@ -34,14 +35,44 @@ void testCodeStaticSobel(Image image) {
 	int * cGrayMap1 = new int[f * c];
 	int * cGrayMap2 = new int[f * c];
 	int * conc = new int[f * c];
-	int * mask = new int[9];
+	float *mask = new float[9];
 
 	horizontalEdgesMask(mask);
 	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
-	staticSobel(grayMap, mask, cGrayMap1, 1, f, c);
+	staticConvolution(grayMap, mask, cGrayMap1, 1, f, c);
 	verticalEdgesMask(mask);
-	staticSobel(grayMap, mask, cGrayMap2, 1, f, c);
+	staticConvolution(grayMap, mask, cGrayMap2, 1, f, c);
 	sumMatrix(cGrayMap1, cGrayMap2, conc, f, c);
+}
+
+void testCodeStaticSharpen(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	float *mask = new float[9];
+
+	sharpenMask(mask);
+	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
+	staticConvolution(grayMap, mask, cGrayMap1, 1, f, c);
+}
+
+void testCodeStaticBlur(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	float *mask = new float[9];
+
+	blurMask(mask);
+	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
+	staticConvolution(grayMap, mask, cGrayMap1, 9, f, c);
 }
 
 void testCodeParalellSobel(Image image) {
@@ -52,11 +83,41 @@ void testCodeParalellSobel(Image image) {
 	int * cGrayMap1 = new int[f * c];
 	int * cGrayMap2 = new int[f * c];
 	int * conc = new int[f * c];
-	int * mask = new int[9];
+	float * mask = new float[9];
 
 	horizontalEdgesMask(mask);
 	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
 	cudaSobelFilter(grayMap, conc, f, c, 1);
+}
+
+void testCodeParalellSharpen(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	float * mask = new float[9];
+
+	sharpenMask(mask);
+	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
+	cudaConvolution(grayMap, conc, mask, f, c, 1);
+}
+
+void testCodeParalellBlur(Image image) {
+	int f = image.getLength();
+	int c = image.getWidth();
+
+	int * grayMap = new int[f * c];
+	int * cGrayMap1 = new int[f * c];
+	int * cGrayMap2 = new int[f * c];
+	int * conc = new int[f * c];
+	float * mask = new float[9];
+
+	blurMask(mask);
+	cudaConvertToGreyMap(image.getBitMap(), grayMap, image.getBipMapLength());
+	cudaConvolution(grayMap, conc, mask, f, c, 9);
 }
 
 int main(int argc, char **argv) {
@@ -66,7 +127,7 @@ int main(int argc, char **argv) {
 	int f = 0;
 	int c = 0;
 	int *map;
-	int *convolutionKernel;
+	float *convolutionKernel;
 	int factor = 1;
 	vector<ProcessNode> nodes;
 
@@ -84,18 +145,28 @@ int main(int argc, char **argv) {
 	c = getLengthFromString(tamano);
 	f = getWidthFromString(tamano);
 	map = new int[f * c * 3];
-	convolutionKernel = new int[9];
+	convolutionKernel = new float[9];
 
 	bitMapBuilder(posicion, argv[1], f, c, map, 3);
 	readConvolutionKernel(convolutionKernel);
 	Image imagen("P3", 255, f, c, map);
 
 	if (argv[3] && strcmp(argv[3], "debug") == 0) {
-		if (strcmp(argv[4], "s") == 0) {
+		if (strcmp(argv[4], "ss") == 0) {
 			testCodeStaticSobel(imagen);
-		} else if (strcmp(argv[4], "p") == 0) {
+		} else if (strcmp(argv[4], "ps") == 0) {
 			testCodeParalellSobel(imagen);
-		} else {
+		} else if(strcmp(argv[4], "ssh") == 0) {
+			testCodeStaticSharpen(imagen);
+		} else if(strcmp(argv[4], "sb") == 0) {
+			testCodeStaticBlur(imagen);
+		} else if (strcmp(argv[4], "psh") == 0) {
+			testCodeParalellSharpen(imagen);
+		}
+		else if(strcmp(argv[4], "pb") == 0) {
+			testCodeParalellBlur(imagen);
+		}
+		else {
 			cout << "test code " << endl;
 			testCode(convolutionKernel);
 		}
