@@ -14,6 +14,8 @@ framework de procesamiento de imagenes en CUDA</p>
 <li>transformacion a escala de grises</li>
 <li>convolucion bidimensional</li>
 <li>filtro sobel, con 2 convoluciones en paralelo con cuda</li>
+<li>blur filter por convolucion bidimensional</li>
+<li>sharpener filter por convolucion bidimensional</li>
 </ul>
 
 <p>pipeline de procesamiento implementado</p>
@@ -27,4 +29,4 @@ para la ejecucion
 ./parallelImageProcessor [ImagenEntrada.ppm] (opcional)[FactorConvolucion]
 </p>
 
-<p><em>Release 1.0.0</em></p>
+<p><em>Developing 1.1.0</em></p>
