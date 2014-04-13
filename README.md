@@ -1,4 +1,4 @@
-<h2>parallelImageProcessor-1.0.0</h2>
+<h2>parallelImageProcessor-1.1.0</h2>
 
 <p>Implentacion del TT para Utem 2013
 framework de procesamiento de imagenes en CUDA</p>
@@ -29,4 +29,4 @@ para la ejecucion
 ./parallelImageProcessor [ImagenEntrada.ppm] (opcional)[FactorConvolucion]
 </p>
 
-<p><em>Developing 1.1.0</em></p>
+<p><em>Release 1.1.0</em></p>
