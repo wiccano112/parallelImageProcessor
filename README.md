@@ -1,4 +1,4 @@
-<h2>parallelImageProcessor-1.1.0</h2>
+<h2>parallelImageProcessor-1.2.0</h2>
 
 <p>Implentacion del TT para Utem 2013
 framework de procesamiento de imagenes en CUDA</p>
@@ -22,11 +22,11 @@ framework de procesamiento de imagenes en CUDA</p>
 <p>en implementacion la ejecucion de los filtros de imagen por cada stage del pipeline</p>
 
 <p>
-Proyecto desarrollado en Nsight 5.0 CUDA LINUX, ubuntu 12.10 
+Proyecto desarrollado en Nsight 5.5 CUDA LINUX, ubuntu 14.04 
 </p>
 <p>
 para la ejecucion
 ./parallelImageProcessor [ImagenEntrada.ppm] (opcional)[FactorConvolucion]
 </p>
 
-<p><em>Release 1.1.0</em></p>
+<p><em>Snapshot 1.2.0</em></p>
