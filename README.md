@@ -19,7 +19,6 @@ framework de procesamiento de imagenes en CUDA</p>
 </ul>
 
 <p>pipeline de procesamiento implementado</p>
-<p>en implementacion la ejecucion de los filtros de imagen por cada stage del pipeline</p>
 
 <p>
 Proyecto desarrollado en Nsight 5.5 CUDA LINUX, Ubuntu 14.04 
