@@ -33,3 +33,4 @@ para la ejecucion
 </p>
 
 <p><em>Snapshot 1.2.0</em></p>
+Testing aplicación Android
