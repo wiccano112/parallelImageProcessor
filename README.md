@@ -20,6 +20,10 @@ framework de procesamiento de imagenes en CUDA</p>
 
 <p>pipeline de procesamiento implementado</p>
 
+<h3>En desarrollo</h3>
+<p>Implementando soporte para kernels de convolucion dinamico</p>
+<p>Implementando mejoras sobre los argumentos del programa</p>
+
 <p>
 Proyecto desarrollado en Nsight 5.5 CUDA LINUX, Ubuntu 14.04 
 </p>

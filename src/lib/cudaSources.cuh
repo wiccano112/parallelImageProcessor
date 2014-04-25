@@ -7,7 +7,7 @@
 
 #ifndef CUDASOURCES_CUH_
 #define CUDASOURCES_CUH_
-
+#include <Util.h>
 __global__ void d_processGreyTransformation(int* d_originMap,
 		int* d_convertedMap, int sizeMap) {
 	// Cada tarea tiene un ID numérico basada en su posición en el bloque.

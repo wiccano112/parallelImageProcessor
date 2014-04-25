@@ -14,6 +14,7 @@
 #include <ProcessNode.h>
 #include <vector>
 #include <cstdio>
+#include <cudaSources.cuh>
 #include <sys/time.h>
 #include <iostream>
 
@@ -352,8 +353,8 @@ int sMatrixOperator(int *d_greyMap, float *d_mask, int a, int b, int c, int d,
 	return convertedPixel;
 }
 
-void staticConvolution(int *d_greyMap, float *d_mask, int *d_convertedMap, int factor,
-		int row, int column) {
+void staticConvolution(int *d_greyMap, float *d_mask, int *d_convertedMap,
+		int factor, int row, int column) {
 	int convertedPixel = 0;
 	int a;
 	int b;
@@ -444,6 +445,30 @@ void sumMatrix(int * a, int * b, int *c, int f, int co) {
 
 	for (int i = 0; i < f * co; i++) {
 		c[i] = sqrt((float) a[i] * a[i] + b[i] * b[i]);
+	}
+}
+
+void readInput(int argc, char ** argv) {
+
+	//opciones
+	//-i imagen
+	//-d debug
+	//-n filas kernel convolucion
+
+	for (int i = 0; i < argc; i++) {
+		if (strcmp(argv[i], "-i") == 0) {
+			cout << "direccion de imagen: " << argv[++i] << endl;
+		}
+		if (strcmp(argv[i], "-d") == 0) {
+			cout << "modo debug: " << endl;
+		}
+		if (strcmp(argv[i], "-n") == 0) {
+			cout << "cantidad de filas y columnas del kernel de convolucion: "
+					<< argv[++i] << endl;
+		}
+		if (strcmp(argv[i], "-h") == 0) {
+			cout << "descripcion de opciones " << endl;
+		}
 	}
 }
 
